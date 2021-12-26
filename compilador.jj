@@ -1,0 +1,695 @@
+PARSER_BEGIN(compilador)
+import java.io.*;
+import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+
+class compilador
+{
+	public static void main( String[] args )throws ParseException, Exception
+	{
+		try
+		{		
+     		compilador analizador = new compilador( System.in ) ;
+			//analizador.Lexico();
+			analizador.Programa();
+			System.out.println("\tFinalizado con exito.");
+		}
+		catch(ParseException e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println("\tError.");
+		}
+
+	}	
+}
+PARSER_END(compilador)
+
+TOKEN: {<PRINT: "print">}//1
+TOKEN:{<TIPO_METODO: "static" | "abstract" | "virtual">{System.out.println("Metodo  -> " +image);}}//2
+TOKEN: {<PRINCIPAL: "main">{System.out.println("Metodo principal" );}} //3
+TOKEN: {<VOID: "void">{System.out.println("Retorno de un metodo");}} //4
+TOKEN:{ <EXCEPCIONES: "throw" | "throws"  | "raise">{System.out.println("Lanzar excepcion->"+image);}} //5
+TOKEN: {<TRY: "try">{System.out.println("Excepcion try");}}//6
+TOKEN: {<MANDA_EXCEPCION: "catch" >{System.out.println("Excepcion de errores try ->" + image);}}//7
+TOKEN: {<DEFINE_CLASES: "class">{System.out.println("Define clase");}} //8
+//TOKEN:{<Tipo_Dato:"int" |"decimal"|"char"|"string"|"bool"|"float">{System.out.println("Tipo de dato->"+image);}}//8
+TOKEN:{<TIPO_DATO: "int"| "decimal" |"char"|"string"|"bool"|"float"|"short"|"ushort"|"uint"|"boolean"
+|"varchar"|"Varbinary"|"Uniqueidentifier"|"Tinyint"|"Text"|"Sysname"|"Smallmoney"|"Smallint"|"Smalldatetime"|"Real"|"nvarchar"
+|"ntext"|"nchar"|"Divisa"|"Datetime2"|"Bit"|"bigint" >{System.out.println("Tipo de dato->"+image);}}//9
+TOKEN:
+{
+		<PARIZQ: "("> {System.out.println("BLOQUE->"+image);} //10
+		| <CORIZQ: "[" > {System.out.println("BLOQUE->"+image);} //11
+		| <LLAVEIZQ: "{"> {System.out.println("BLOQUE->"+image);} //12
+		| <PARDER: ")"> {System.out.println("BLOQUE->"+image);} //13
+		| <CORDER:"]"> {System.out.println("BLOQUE->"+image);} //14
+		| <LLAVEDER:"}"> {System.out.println("BLOQUE->"+image);} //15
+}
+TOKEN:
+{
+	<COMA: "," > {System.out.println("Coma");} //16
+	| <PUNTO: "." > {System.out.println("Punto");} //17
+	| <PUNTOYCOMA: ";" > {System.out.println("Punto y coma");} //18
+	| <COMILLADOBLE: "\"" > {System.out.println("Comilla doble");} //19
+	| <DOSPUNTOS: ":"> {System.out.println("Dos puntos");} //20
+}
+TOKEN:{ <FUNCION: "def" | "lambda" | "pred">{System.out.println("Define funcion ->"+image);}}//21
+TOKEN:{ <MODIFICADOR_ACCESO: "public" | "private" | "protected">{System.out.println("Modificador ->"+image);}}//22
+//Operador aritmetico
+TOKEN : {<ASIGNACION:"=">{System.out.println("Asignacion");} //23
+| <MAS:"+">{System.out.println("Mas");} //24
+| <MENOS: "-">{System.out.println("Menos");}//25
+| <MULT: "*">{System.out.println("Coma");} //26
+|<DIV: "/">{System.out.println("Diagonal");}} //27
+TOKEN:{<OP_REL: "<"|"<="|">"|">="|"=="|"!=">{System.out.println("OP_RELACIONAL ->"+image);}} //28
+TOKEN:{ <OP_LOG: "and"|"or"|"not"|"&&"|"||"|"!">{System.out.println("OP_Logicos ->"+image);}} //29
+TOKEN: {<EXTENDS: "extends" | "base" | "this" | "implements">{System.out.println("Hereda ->"+image);}} //30
+TOKEN: {<ENDIF: "endif">{System.out.println("Fin del if");}} //31
+TOKEN: {<ENDCICLO: "endwhile" | "endforeach">{System.out.println("Fin ciclo->"+image);}} //32
+//Ciclos
+TOKEN:{
+<CICLOWHILE: "while">{System.out.println("Ciclo -> " +image);}//33
+| <FOR: "for">{System.out.println("Ciclo -> " +image);} //34
+| <FOREACH: "foreach">{System.out.println("Ciclo ->"+image);}//35
+| <DO: "do">{System.out.println("Ciclo -> " +image);}//36
+}
+TOKEN:{ <REPETIR: "retry" | "repeat">{System.out.println("Repite ->"+image);}} //37
+TOKEN: {<OBJECTOS: "object" | "self">{System.out.println("Objeto "+ image);}} //38
+TOKEN: {<EVENT: "event">{System.out.println("Evento");}} //39
+TOKEN: {<BEGIN: "begin">{System.out.println("Empieza ");}} //40
+TOKEN: {<AS: "as">{System.out.println("Convierte tipo");}} //41
+TOKEN:{ <INTERRUPTOR:"break" | "continue">{System.out.println("Interruptor ->"+image);}}  //42
+TOKEN:{<SWITCH:"switch" >//43
+| <IF: "if">{System.out.println("Condicional");}} //44
+//Depende pregunta
+TOKEN:{<ELSE: "else">| <ELIF: "elif">{System.out.println("Condicional "+ image);}} //45-46
+TOKEN:{<CHECKED:"checked" | "unchecked" >{System.out.println("Comprueba ->"+image);}} //47
+TOKEN:{<CONST:"const">{System.out.println("Declara constante");}} //48
+TOKEN:{<PORDEFECTO:"default">{System.out.println("Por defecto");}} //49
+TOKEN:{<RETORNA_VALOR:"delegate" | "return" | "yield">{System.out.println("Devuelve valor ->"+ image);}} //50
+TOKEN:{ <ASYNC: "async">{System.out.println("Funcion asincrona");}} // 51
+TOKEN:{ <ASSERT: "assert">{System.out.println("Evalua si devuelve true");}} //52
+TOKEN:{ <DEL: "del">{System.out.println("Elimina referencia");}} //53
+TOKEN:{ <EXEC: "exec">{System.out.println("Cadena o archivo");}} //54
+TOKEN:{ <CALIFICADOR: "global" | "local" | "nonlocal">{System.out.println("Calificador de ambito ->"+image);}} //55
+TOKEN:{ <LIBRERIAS: "import" | "export">{System.out.println("Clase ->"+image);}} // 56
+TOKEN:{ <IN: "in">{System.out.println("Existencia de valor");}} // 57
+TOKEN:{ <IS: "is">{System.out.println("Objetos iguales");}} // 58
+TOKEN:{ <NONE: "none">{System.out.println("Nada ");}} // 59
+TOKEN:{ <PASS: "pass">{System.out.println("Rellena espacios ");}} // 60
+TOKEN:{<INC_DEC:"++" | "--">{System.out.println("Incremento o decremento->"+image);}} //61
+TOKEN:{ <BOOLEAN: "true" | "false">{System.out.println("BOOLEANO ->"+image);}} // 62
+TOKEN:{ <INSTANCEOF: "instanceof">{System.out.println("Instancia");}} // 63
+TOKEN:{ <ISSET: "isset">{System.out.println("Variable definida");}} // 64
+TOKEN:{ <CLONE: "clone">{System.out.println("Clonar");}} // 65
+TOKEN:{ <GOTO: "goto">{System.out.println("Salto");}} // 66
+TOKEN:{ <TRAIT: "trait">{System.out.println("Rasgos");}} // 67
+TOKEN:{ <EVALUA: "include" | "require" | "eval" | "rescue" | "ensure">{System.out.println("EVALUA ->"+image);}} //68
+TOKEN:{<TERMINA: "die" | "exit">{System.out.println("TERMINA ->"+image);}}  //69
+TOKEN:{ <EMPY: "empy">{System.out.println("Vacio");}} // 70
+TOKEN:{ <ECHO: "echo">{System.out.println("Muestra cadena ");}} // 71
+TOKEN:{ <UNSET: "unset">{System.out.println("Destruye Variable");}} // 72
+TOKEN:{ <MODULE: "module">{System.out.println("Declara modulo ");}} //73
+TOKEN:{ <NIL: "nil">{System.out.println("Invalido ");}} //74
+TOKEN:{ <EJECUTA_FALSE: "until" | "unless">{System.out.println("Ejecuta mientras es =false ->" + image);}} //75
+TOKEN:{ <CALLABLE: "callable">{System.out.println("Devolucion de llamada ");}} //76
+TOKEN:{ <TRANSIENT: "transient">{System.out.println("Demarcar");}} //77
+TOKEN:{ <NULL: "null">{System.out.println("Sin objeto");}} //78
+TOKEN:{<OPEN:"open" | "opens">{System.out.println("ABRIR ->"+image);}} //79
+TOKEN:{ <SYNCHRONIZED: "synchronized">{System.out.println("Sincronizacion");}} //80
+TOKEN:{ <TYPEDEF: "typedef">{System.out.println("Asigna nombre alternativo ");}} //81
+TOKEN:{ <PACKAGE: "package">{System.out.println("Paquete_Programas ");}} //82
+TOKEN:{ <STRICTFP: "strictfp">{System.out.println("Restringe ");}} //83
+TOKEN:{ <VOLATILE: "volatile">{System.out.println("Marcador_Variable");}} //84
+TOKEN:{ <DEFER: "defer">{System.out.println("Ejecuta_sentencia");}} //85
+TOKEN:{ <MAP: "map">{System.out.println("Aplica_Func");}} //86
+TOKEN:{ <REDO: "redo">{System.out.println("Salto loop ");}} //87
+TOKEN:{ <ALIAS: "alias">{System.out.println("Crea alias ");}} //88
+TOKEN:{ <CLAUSULA: "when" | "from">{System.out.println("Clausula ->"+image);}} //89
+TOKEN:{<MAYUSCULA:"upper"> //90
+|<MINUSCULA: "lower">{System.out.println("USO MINUSCULA y MAYUSCULA ->"+image);}} //91
+TOKEN:{ <OPERADOR: "new" >{System.out.println("Operador ->"+image);}} //92
+TOKEN:{ <TYPEOF: "typeof">{System.out.println("Tipo");}} //93
+TOKEN:{ <SIZEOF: "sizeof">{System.out.println("Tamaño ");}} //94
+TOKEN:{<EXP_IMP:"explicit"|"implicit">{System.out.println("Conversiones ->"+image);}} //95
+TOKEN:{<CONTENEDOR_ELEMENTO: "array" | "list">{System.out.println("ARREGLO ->" +image);}}//96
+TOKEN:{ <STACKALLOC: "stackalloc">{System.out.println("Contenedores ->" +image);}} //97
+TOKEN:
+{
+	<SET:"set">{System.out.println("Condicional ->"+ image);} //98 
+	|<GET:"get">{System.out.println("Encapsulamiento ->"+image);}
+} //99
+TOKEN:{ <VALUE: "value" | "ByValue">{System.out.println("Valor ->" + image);}} //100
+TOKEN:{ <RANGE: "range">{System.out.println("Aleatorio");}} //101
+TOKEN:{ <UNDEF: "undef">{System.out.println("Metodo indefinido");}} //102
+TOKEN:{<MOD:"extern"|"intern"|"sealed" | "native" | "final" | "fallthrough" | "out" | "unsafe">{System.out.println("Modificador ->"+image);}} //103
+TOKEN:{ <PARAMS: "params">{System.out.println("Parametros");}} //104
+TOKEN:{ <ONE_WAY: "one_way">{System.out.println("Unidireccional");}} //105
+TOKEN:{ <NAMESPACE: "namespace">{System.out.println("Bloque namespace");}} //106
+TOKEN:{ <REF: "ref">{System.out.println("Referencia");}} //107
+TOKEN:{ <MAXINT: "maxint">{System.out.println("Valor maximo");}} //108
+TOKEN:{ <USES: "uses">{System.out.println("Declarar unidades");}} //109
+TOKEN:{ <THREAD_SAFE: "thread " "safe">{System.out.println("Seguridad de hilos");}} //110
+TOKEN:{ <ENUM: "enum">{System.out.println("Enumeracion");}} //111
+TOKEN:{ <ODD: "odd">{System.out.println("Devuelve verdadero o falso");}} //112
+TOKEN:{ <FIXED: "fixed">{System.out.println("Sentencia fija");}} //113
+TOKEN:{ <STRUCT: "struct">{System.out.println("Estructura ");}} //114
+TOKEN:{ <USING: "using">{System.out.println("Declaracion");}} //115
+TOKEN:{ <OVERRIDE: "override">{System.out.println("Anular");}} //116
+TOKEN:{ <READONLY: "readonly">{System.out.println("Solo leer");}} //117
+TOKEN:{ <LOCK_UNLOCK: "lock" | "unlock">{System.out.println("Bloqueo->"+image);}} //118
+TOKEN:{ <ASM: "asm">{System.out.println("Invocador ensamblador");}} //119
+TOKEN:{ <NEWTYPE: "newtype">{System.out.println("Crear nuevo tipo");}} //120
+TOKEN:{ <BITLAND: "bitland">{System.out.println("Funcion devolver");}} //121
+TOKEN:{ <OUTER: "outer">{System.out.println("Externo");}} //122
+TOKEN:{ <FUTURE: "future">{System.out.println("Resultado calculo");}} //123
+TOKEN:{ <REST: "rest">{System.out.println("Numero indefinido");}} //124
+TOKEN:{ <DEBUGGER: "debugger">{System.out.println("Depurador");}} //125
+TOKEN:{ <TRANSITIVE: "transitive">{System.out.println("Transitivo");}} //126
+TOKEN:{ <ACCEDE_CLASE_PADRE: "super">{System.out.println("Clase padre");}} //127
+TOKEN:{ <CASE: "case">{System.out.println("case");}} //128
+TOKEN:{ <FIN: "end">{System.out.println("end");}} //129
+TOKEN:{ <PROGRAMA: "program">{System.out.println("end->image");}} //130
+TOKEN:{<SISTEMA:"system">{System.out.println("system->image");}}//131
+TOKEN:{<LIMPIAR:"clear">{System.out.println("clear->image");}}//132
+TOKEN:{<FUNCMATEMATICA:"PI" | "E" | "Abs" | "Exp" | "DivRem" | "Log" | "Max" | "Min" | "Sqrt" | "Sin" | "Cos" | "Tan" | "Pow">{System.out.println("Funcion_Matematica->"+image);}}//133
+TOKEN:{<MATEMATICA: "math">{System.out.println("math->image");}}//134
+TOKEN:{<ENTRADA: "input">{System.out.println("entrada->image");}}//135
+TOKEN:{<USO_LIBRERIA:"Matplotlib" | "TensorFlow" | "Keras" | "Numpy" | "Math" | "Pandas" >{System.out.println("importa libreria ->"+image);}}//136
+TOKEN:{<READ: "read">{System.out.println("leer->image");}}//137
+TOKEN:{<CONVERTIR: "convert">{System.out.println("convertir->image");}}//138
+TOKEN :
+{
+	<BUTON: "buton"> {System.out.println("Herramientas -> "+image);}//139
+	|<LABEL: "label"> {System.out.println("Herramientas -> "+image);}//140
+	|<TEXTBOX: "textbox"> {System.out.println("Herramientas -> "+image);} //141
+	| <TABLE: "table" > {System.out.println("Herramientas -> "+image);}//142
+	| <PICTUREBOX: "picturebox"> {System.out.println("Herramientas -> "+image);}//143
+	| <POINTER: "pointer"> {System.out.println("Herramientas -> "+image);}//144
+	| <PANEL: "panel"> {System.out.println("Herramientas -> "+image);}//145
+	| <TABCONTROL: "tabcontrol"> {System.out.println("Herramientas -> "+image);} //146
+}  
+TOKEN :
+{
+	<TUPLE: "tuple"> {System.out.println("Funcion cadena -> "+image);}//147
+	| <TYPE: "type"> {System.out.println("Funcion cadena -> "+image);}//148
+	| <LEN: "len"> {System.out.println("Funcion cadena -> "+image);} //149
+	| <REPLACE: "replace" > {System.out.println("Funcion cadena -> "+image);}//150
+	| <SUM: "sum" > {System.out.println("Funcion cadena -> "+image);}//151
+	| <STR: "str" > {System.out.println("Funcion cadena -> "+image);}//152
+}  
+
+TOKEN :
+{
+	<IDENTIFIER: <LETRA>(<LETRA> | <NUMEROS> | "_")* > //{System.out.println("identificador -> "+image);} //138
+	|<NUMEROS: (["0"-"9"])+>//139
+	|<NUMEROS_DECIMALES:(["0"-"9"])+["."](["0"-"9"])+> //140
+	| <#LETRA: (["a"-"z","A"-"Z"])>//141
+	| <CADENA: (<COMILLADOBLE>(<LETRA> | <NUMEROS> | "_" | " ")*<COMILLADOBLE>)>//142
+	| <CARAC : "'"["a"-"z","A"-"Z","0"-"9"]"'" > //{System.out.println(" ->"+image);}//143
+}  
+
+//TOKEN: {<IDENTIFICADOR : (["A"-"Z","a"-"z","0"-"9","_"])+>} 
+
+SKIP:
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+| "\r\n"
+| "//"
+| "/*"
+| "*/"
+}
+
+void Lexico():
+{ 
+	ArrayList<String> TablaSimbolos;
+    TablaSimbolos = new ArrayList<String>();
+    Token a;
+	Token b;
+	Token d;
+	Token e;
+	ArrayList<String> Lista_Identificadores = new ArrayList<String>();
+	ArrayList<String> Lista_Letras = new ArrayList<String>();
+	ArrayList<String> Lista_Caracteres = new ArrayList<String>();
+	ArrayList<String> Lista_Numeros = new ArrayList<String>();
+
+
+
+
+    Token token;
+}
+{
+    {   
+		System.out.println("-------------"+"TABLA DE SIMBOLOS"+"-----------");
+        System.out.println(String.format("%30s %25s %10s %25s %10s", "token", "|", "lexema", "|", "valor atributo"));
+        System.out.println(String.format("%s", "---------------------------------------------------------------------------------------"));
+	}
+
+	(
+
+	<PRINT>|<TIPO_METODO>|<PRINCIPAL>|<VOID>|<EXCEPCIONES>|<TRY>|<MANDA_EXCEPCION>|<DEFINE_CLASES>|<TIPO_DATO>|<PARIZQ> //1-10
+	|<CORIZQ>|<LLAVEIZQ>|<PARDER>|<CORDER>|<LLAVEDER>|<COMA>|<PUNTO>|<PUNTOYCOMA>|<COMILLADOBLE>|<DOSPUNTOS> //11-20
+	|<FUNCION>|<MODIFICADOR_ACCESO>|<ASIGNACION>|<MAS>|<MENOS>|<MULT>|<DIV>|<OP_REL>|<OP_LOG>|<EXTENDS> //21-30
+	|<ENDIF>|<ENDCICLO>|<CICLOWHILE>|<FOR>|<FOREACH>|<DO>|<REPETIR>|<OBJECTOS>|<EVENT>|<BEGIN> //31-40
+	|<AS>|<INTERRUPTOR>|<SWITCH>|<IF>|<ELSE>|<ELIF>|<CHECKED>|<CONST>|<PORDEFECTO>|<RETORNA_VALOR>// 41-50
+	|<ASYNC>|<ASSERT>|<DEL>|<EXEC>|<CALIFICADOR>|<LIBRERIAS>|<IN>|<IS>|<NONE>|<PASS> // 51-60
+	|<INC_DEC>|<BOOLEAN>|<INSTANCEOF>|<ISSET>|<CLONE>|<GOTO>|<TRAIT>|<EVALUA>|<TERMINA>|<EMPY> // 61-70
+	|<ECHO>|<UNSET>|<MODULE>|<NIL>|<EJECUTA_FALSE>|<CALLABLE>|<TRANSIENT>|<NULL>|<OPEN>|<SYNCHRONIZED> // 71-80
+	|<TYPEDEF>|<PACKAGE>|<STRICTFP>|<VOLATILE>|<DEFER>|<MAP>|<REDO>|<ALIAS>|<CLAUSULA>|<MAYUSCULA> //81-90
+	|<MINUSCULA>|<OPERADOR>|<TYPEOF>|<SIZEOF>|<EXP_IMP>|<CONTENEDOR_ELEMENTO>|<STACKALLOC>|<SET>|<GET>|<VALUE> //91-100
+	|<RANGE>|<UNDEF>|<MOD>|<PARAMS>|<ONE_WAY>|<NAMESPACE>|<REF>|<MAXINT>|<USES>|<THREAD_SAFE> // 101-110
+	|<ENUM>|<ODD>|<FIXED>|<STRUCT>|<USING>|<OVERRIDE>|<READONLY>|<LOCK_UNLOCK>|<ASM>|<NEWTYPE> // 111-120
+	|<BITLAND>|<OUTER>|<FUTURE>|<REST>|<DEBUGGER>|<TRANSITIVE>|<ACCEDE_CLASE_PADRE>|<CASE>|<FIN>|<PROGRAMA> // 121-130
+	|<SISTEMA>|<LIMPIAR>|<FUNCMATEMATICA>|<MATEMATICA>|<ENTRADA>|<USO_LIBRERIA>|<READ>|<CONVERTIR>|<BUTON>|<LABEL> // 131-140
+	|<TEXTBOX>|<TABLE>|<PICTUREBOX>|<POINTER>|<PANEL>|<TABCONTROL>|<TUPLE>|<TYPE>|<LEN>|<REPLACE>  // 141-150
+	|<SUM>|<STR>|<NUMEROS_DECIMALES>
+	|a = <IDENTIFIER>
+    {
+      if(Lista_Identificadores.contains(a.image) == false)
+      {
+        Lista_Identificadores.add(a.image);
+        System.out.println("Identificador	->  " + "(" + Lista_Identificadores.indexOf(a.image) + ")");
+      }
+      else
+      {
+        System.out.println("Identificador	->  " + "(" + Lista_Identificadores.indexOf(a.image) + ")");
+      }
+    }
+	|
+	b = <CADENA>
+    {
+      if(Lista_Letras.contains(b.image) == false)
+      {
+        Lista_Letras.add(b.image);
+        System.out.println("Cadena	->  " + "(" + Lista_Letras.indexOf(b.image) + ")");
+      }
+      else
+      {
+        System.out.println("Cadena	->  " + "(" + Lista_Letras.indexOf(b.image) + ")");
+      }
+    }
+	|
+	d = <CARAC>
+    {
+      if(Lista_Caracteres.contains(d.image) == false)
+      {
+        Lista_Caracteres.add(d.image);
+        System.out.println("Caracter            ->  " + "(" + Lista_Caracteres.indexOf(d.image) + ")");
+      }
+      else
+      {
+        System.out.println("Caracter            ->  " + "(" + Lista_Caracteres.indexOf(d.image) + ")");
+      }
+    }
+	|
+	e = <NUMEROS>
+    {
+      if(Lista_Numeros.contains(e.image) == false)
+      {
+        Lista_Numeros.add(e.image);
+        System.out.println("Numero              ->  " + "(" + Lista_Numeros.indexOf(e.image) + ")");
+      }
+      else
+      {
+        System.out.println("Numero              ->  " + "(" + Lista_Numeros.indexOf(e.image) + ")");
+      }
+    }
+	)*<EOF>	
+}
+
+
+
+//1. namespace
+void Programa():
+{ }
+{	
+	((librerias())* <NAMESPACE><IDENTIFIER>programaPrincipal()<FIN>)
+	<EOF>		
+}
+//2. librerias
+void librerias():
+{ }
+{
+	(<LIBRERIAS><USO_LIBRERIA>)
+}
+//3.Programa principal (class program)
+void programaPrincipal():
+{ }
+{
+	
+	(<PROGRAMA><DEFINE_CLASES>(declaracionVariable())* metodoPrincipal()<FIN>)?
+	(defineClase()| herencia())*
+}
+//4. Metodo main
+void metodoPrincipal():
+{ }
+{
+	(<PRINCIPAL>bloqueCodigoMetodo())? (defineMetodos() | defineFuncion())*
+}
+void bloqueCodigoMetodo():
+{ }
+{
+	(
+		
+		imprime()  
+		| declaracionVariable()
+		| ciclos()  
+		| excepciones() 
+		| preguntaIf()
+		| objeto()
+		| thiss()
+		| llamadaMetodo()
+		| sett()
+		| gett()
+		| salir()
+		| limpiar()
+		| operacionMatematica()
+		| contieneElementos()
+		| rango()
+		| matriz()
+		| preguntaSwitch()
+		| leer()
+		| numeroBytes()
+		| tipoOperador()
+		| convertir()
+		| may_min()
+		
+	)*
+}
+//5. Declaración de variables
+void declaracionVariable():
+{ }
+{
+	<TIPO_DATO>valor()<ASIGNACION><IDENTIFIER>
+}
+void valor():
+{ }
+{
+	<IDENTIFIER> | <NUMEROS> | <CADENA> | <CARAC> | <NUMEROS_DECIMALES>
+}
+
+//6. Pregunta IF
+void preguntaIf():
+{ }
+{
+	<IF> condicion() bloqueCodigo() <FIN>
+}
+void condicion():
+{ }
+{
+	valor()<OP_REL>valor()(<OP_LOG>valor()<OP_REL>valor())*
+}
+//7. Imprimir
+void imprime():
+{ }
+{
+	<PRINT><PARIZQ>imprimeValor()<PARDER>
+}
+void imprimeValor():
+{ }
+{
+	(valor()(<MAS>valor())*)
+}
+// 8. Switch case
+void preguntaSwitch():
+{ }
+{
+	<SWITCH><PARIZQ><IDENTIFIER><PARDER> casos() porDefecto()<FIN>
+}
+void casos():
+{ }
+{
+	(<CASE>valor() bloqueCodigo()<INTERRUPTOR><FIN>)+
+}
+void porDefecto():
+{ }
+{
+	(<PORDEFECTO><DOSPUNTOS>bloqueCodigo()<FIN>)?
+}
+//9. ciclos
+void ciclos():
+{ }
+{
+	(cicloWhile() | cicloFor() | cicloDo())
+}
+void cicloWhile():
+{ }
+{
+	<CICLOWHILE> condicion() bloqueCodigo()<FIN>
+}
+void cicloFor():
+{ }
+{
+	<FOR>inicializador()<ASIGNACION><NUMEROS><PUNTOYCOMA> condicion()<PUNTOYCOMA><IDENTIFIER><INC_DEC>bloqueCodigo()<FIN>
+}
+void inicializador():
+{ }
+{
+	<TIPO_DATO><IDENTIFIER> | <IDENTIFIER>
+}
+void cicloDo():
+{ }
+{
+	<DO>bloqueCodigo()<FIN><PARIZQ><CICLOWHILE>condicion()<PARDER>
+}
+void bloqueCodigo():
+{ }
+{
+	(declaracionVariable() 
+	| ciclos() 
+	| imprime() 
+	| preguntaIf()
+	| contieneElementos()
+	| operacionMatematica()
+	| excepciones()
+	| salir()
+	| limpiar()
+	| rango()
+	| matriz()
+	| inc_dec()
+	| convertir()
+	| may_min()
+	)*
+}
+//10. Funcion
+void defineFuncion():
+{ }
+{
+	<FUNCION><PARIZQ>defineParametros()<PARDER><IDENTIFIER>bloqueCodigoMetodo()<FIN>
+}
+void defineParametros():
+{ }
+{
+	(defineParametro()(<COMA>defineParametro())*)*
+}
+void defineParametro():
+{ }
+{
+	(<TIPO_DATO>)?<IDENTIFIER>
+}
+//11. Excepcion try-catch
+void excepciones():
+{ }
+{
+	<TRY>bloqueCodigo()<FIN><MANDA_EXCEPCION><PARIZQ><PARDER>imprime()<FIN>
+}
+//12. Define clase
+void defineClase():
+{ }
+{
+	<IDENTIFIER><MODIFICADOR_ACCESO><DEFINE_CLASES><DOSPUNTOS>bloqueCodigoClase()<FIN>
+}
+void bloqueCodigoClase():
+{ }
+{
+	(defineFuncion() | defineMetodos() | sett() | gett() | contieneElementos() | declaracionVariable() | matriz())*
+}
+//13. Objeto
+void objeto():
+{ }	
+{
+	<OBJECTOS><IDENTIFIER><ASIGNACION><OPERADOR><OBJECTOS><PARIZQ><PARDER>
+}
+// 14. contiene elentos (listas y arreglos)
+void contieneElementos():
+{
+
+}
+{
+	lista() | arreglo() 
+}
+void lista():
+{ }
+{
+	<LLAVEIZQ>elementosContenidos()<LLAVEDER><ASIGNACION>inicializador()
+}
+void elementoContenido():
+{ }
+{
+	<CADENA> | <NUMEROS>
+}
+void elementosContenidos():
+{ }
+{
+	elementoContenido()(<COMA>elementoContenido())*
+}
+void arreglo():
+{ }
+{
+	<PARIZQ>elementosContenidos()<PARDER><ASIGNACION>inicializador()<CORIZQ><NUMEROS><CORDER>
+}
+//15. retornno 
+void retorno():
+{ }
+{
+	<RETORNA_VALOR><IDENTIFIER>
+}
+//16. leer
+void leer():
+{ }
+{
+	<READ><PUNTO><OPERADOR><READ><PARIZQ><PARDER>
+}
+//17. rango
+void rango():
+{ }
+{
+	<RANGE><PARIZQ>dentroRango()<PARDER>
+}
+void dentroRango():
+{ }
+{
+	<NUMEROS><COMA><NUMEROS>
+}
+//18. size of
+void numeroBytes():
+{ }
+{
+	<SIZEOF><PARIZQ>(<TIPO_DATO>|<IDENTIFIER>)<PARDER>
+}
+//19. type of
+void tipoOperador():
+{ }
+{
+	<TYPEOF><IDENTIFIER>
+}
+//20. this
+void thiss():
+{}
+{
+	<EXTENDS><PUNTO><IDENTIFIER><ASIGNACION><IDENTIFIER>
+}
+// 21. exit
+void salir():
+{}
+{
+	<TERMINA><PARIZQ><PARDER>
+}
+// 22. llama metodo
+void llamadaMetodo():
+{}
+{
+	<IDENTIFIER><PARIZQ>defineParametros()<PARDER>
+}
+//23. herencia
+void herencia():
+{ }
+{
+	<DOSPUNTOS><IDENTIFIER><DOSPUNTOS><IDENTIFIER><DEFINE_CLASES><DOSPUNTOS>bloqueCodigoClase()<FIN>
+}
+//24. set
+void sett():
+{}
+{
+	<SET> <DOSPUNTOS> <IDENTIFIER> <ASIGNACION> valor() <FIN>
+}
+//25. get
+void gett():
+{}
+{
+	<GET> <DOSPUNTOS> retorno() <FIN>
+}
+//26. matrices
+void matriz():
+{}
+{
+	<CORIZQ><NUMEROS><COMA><NUMEROS><CORDER>inicializador()<ASIGNACION><OPERADOR><TIPO_DATO><CORIZQ>elementosMatriz()<CORDER>
+}
+void elementosMatriz():
+{}
+{
+	<LLAVEIZQ>elementosContenidos()<LLAVEDER>(<COMA><LLAVEIZQ>elementosContenidos()<LLAVEDER>)*
+}
+//27. limpiar
+void limpiar():
+{}
+{
+	<SISTEMA><PUNTO><LIMPIAR>
+}
+//28. math
+void operacionMatematica():
+{}
+{
+	<MATEMATICA><PUNTO><FUNCMATEMATICA><PARIZQ>valorOperacion()<PARDER> 
+}
+void valorOperacion():
+{}
+{
+	valorOper()(<COMA>valorOper())*
+}
+void valorOper():
+{}
+{
+	<IDENTIFIER>|<NUMEROS>
+}
+
+//30. definir metodos
+void defineMetodos():
+{ }
+{
+	(metodoRetorno() | metodoSinRetorno())
+}
+void metodoRetorno():
+{ }
+{
+	<MODIFICADOR_ACCESO><TIPO_DATO><IDENTIFIER><PARIZQ>defineParametros()<PARDER><DOSPUNTOS>bloqueCodigoMetodo()retorno()<FIN>
+}
+void metodoSinRetorno():
+{ }
+{
+	
+	<VOID><IDENTIFIER><PARIZQ>defineParametros()<PARDER>bloqueCodigoMetodo()<FIN>
+}
+void inc_dec():
+{ }
+{
+	<IDENTIFIER><INC_DEC>
+}
+//31. Convierte
+void convertir():
+{ }
+{
+	<CONVERTIR><PARIZQ><TIPO_DATO><PARIZQ><IDENTIFIER><PARDER><PARDER><ASIGNACION>(<TIPO_DATO>)?<IDENTIFIER>
+}
+//32. mayuscula y MINUSCULA
+void may_min():
+{ }
+{
+	convMinuscula() | convMayuscula()
+	
+}
+void convMinuscula():
+{ }
+{
+	<MINUSCULA><PUNTO><IDENTIFIER>(<ASIGNACION>(<TIPO_DATO>)?<IDENTIFIER>)?
+}
+void convMayuscula():
+{ }
+{
+	<MAYUSCULA><PUNTO><IDENTIFIER>(<ASIGNACION>(<TIPO_DATO>)?<IDENTIFIER>)?
+}

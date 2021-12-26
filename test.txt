@@ -1,0 +1,99 @@
+import Matplotlib  
+
+namespace Hola
+   class 
+
+    int 1 = id 
+
+    main
+      object identificador = new object()
+
+      string hola = idmain
+      decimal  11.1 = num
+      char a = valor
+      string mundo = valor
+
+      print(id)
+
+      if x < y 
+      print(identificador)
+      end
+
+
+      switch(identificador)
+        case 10 print(x) break end
+        default: print(x) end
+      end
+
+      while x < b 
+        print(x)
+      end
+
+      do
+        print(x) 
+      end
+      (while x < b)
+
+
+
+      for int id = 0 ; id < num ; id++  
+        print(x)
+      end
+
+      try
+        print(id)
+      end
+      catch()
+        print(id)
+      end
+
+      { 5,3,2 } = int lista
+
+      (5,3,2) = int arreglo[2]
+
+      read.new read()
+
+      range (4,10)
+
+      sizeof (string)
+
+      typeof identificador
+
+      extends.identificador = identificador
+
+      termina()
+
+      metodo()
+
+      set: identificador = valor end
+
+      get: return id end
+
+      system.clear
+
+      math.Log(20)
+
+      convert(int(identificador)) = string identifcador
+
+      lower.identificador = string identificador
+
+      upper.identificador = string identificador
+
+      void identificador(parametros) 
+        print(x)
+        convert(int(identificador)) = string identifcador
+        lower.identificador = string identificador
+        upper.identificador = string identificador
+      end
+
+      def(parametro) identificador 
+        try
+          print(id)
+        end
+        catch()
+          print(id)
+        end
+      end
+
+end
+end
