@@ -1,27 +1,53 @@
-# Lenguaje valkiria
-Este es un lenguaje de programacion desarrollado en la materia de lenguajes y automatas el cual tiene como objetivo tener codigo desarrollado por bloques
+# Valkyrie compiler
 
-### Para empesar 
+_Lexical and syntactic analyzer for a compiler, cross plataform_
 
-  - Este lenguaje esta desarrollado con javacc
-  - Para su desarrollo fue requerido el [SDK de java](https://www.oracle.com/java/technologies/downloads/)
+## Get Started 🚀
 
-### Tutorial
+_Download for update your git projects fast_
 
- Para la compilacion se requieren los siguientes comandos:
+### Pre-requisites and builded with 📋 🛠️
+
+* [Javacc](https://javacc.github.io/javacc/) - version 7.0.10
+* [Java](https://www.oracle.com/java/technologies/downloads/) - SDK
+* [git](https://git-scm.com/) - For branching
+* [vs code](https://code.visualstudio.com/) - For code edit
+
+### Instalation 🔧
+
+_Download on zip or clone_
+
+_You can also upgrade the project cloning the repository or download in a zip_
+```
+git clone https://github.com/kikhi/ATM.git
+```
+
+### Run and Testing ⌨️
+
+_For run project follow this commands_
  
-  - Primero compilamos el jj
- ```
-    javacc compilador.jj
+ _Compile jj project_
+```
+ javacc compilador.jj
  ```
  
-  - Despues el todos los que resultaron del anterior
+_Compile all files .java generated_
 ```
-    javac *.java
+javac *.java
 ```
 
-  - Finalmente para testear una estructura de codigo de un txt con el compilador utilizamos el siguiente
+_Finally can test the languaje with the compiler
 ```
-    java compilador < test.txt
+java compilador < test.txt
 ```
-Tomar en cuenta que el txt es creado como si fuera el codigo que el programador genera y el compilador es el resultado de las primeras compilaciones
+_txt file is the code from the new languaje to analyze_
+
+_Then you can publish the project or take the .exe for personal use_
+
+## Licence 📄
+
+This project is for free use - See the licence [LICENSE.md](LICENSE.md) for more details
+
+
+---
+Made by [kikhi](https://github.com/kikhi) 😊
